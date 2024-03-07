@@ -12,17 +12,14 @@ const openai = new OpenAI({
   apiKey: process.env["OPENAI_API_KEY"], // This is the default and can be omitted
 });
 
-type Work = {
-  companyName: string;
-  role: string;
-  location: string;
-  duration: string;
-  description: string;
+type Skills = {
+  name: string;
+  level: number;
 };
 
 type MyRequest = {
   jobDescription: string;
-  experiences: Work[];
+  experiences: Skills[];
 };
 
 export default async function handler(
@@ -31,14 +28,19 @@ export default async function handler(
 ) {
   if (req.method === "POST") {
     const { jobDescription, experiences } = req.body as MyRequest;
-    const question = `Kuinka voisin parhaiten sovittaa työkokemukseni ja sen kuvauksen tämän 
-    työilmoituksen vaatimusten kanssa? Olisiko tärkeää painottaa jotain tiettyä osa-aluetta tai 
-    lisätä muita relevantteja taitoja ja saavutuksia?
+    const question = ` Vastaako minun taidot työilmoitusta ja arvosanan jonka olen laittanut?"
 
-    Anna neuvo lyhyesti 3 lausein.
+    Anna neuvo ytimekkäästi vain käyttäjän taidoista ja lyhyesti 3 lausein. 
     
-    Älä ehdota mitään linkkejä. `;
-    const message = `${question} Tässä on minun työkokemukseni ${JSON.stringify(
+    Ehdota käyttäjää laittamaan enemmän taitoja tarvittaessa, 
+    mutta vain ohjelmointikielejä ja niitten työkaluja.
+
+    Käske poistamaan ei tarvittavat taidot ja työkalut, jos ei liity työilmoitukseen
+
+    Älä ehdota mitään linkkejä käyttäjälle.
+    Älä korosta tiimityöskentelyä ja jatkuvaa halua oppia uutta `;
+
+    const message = `${question} Tässä on minun taidot ja arvosanat ${JSON.stringify(
       experiences
     )}, tässä on työilmoitus ${jobDescription}`;
 

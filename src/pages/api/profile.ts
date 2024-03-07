@@ -1,9 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
 
-//tämä on alusta kaikille käyttäjän tiedoista, jotta AI osaa neuvoo
-//ja auttaa käyttäjää täyttämään heidän ansioluettelon.
-
 type TestParams = {
   params: { keywords: string };
 };
@@ -15,12 +12,34 @@ const openai = new OpenAI({
   apiKey: process.env["OPENAI_API_KEY"], // This is the default and can be omitted
 });
 
+type Profile = {
+  description: string;
+};
+
+type MyRequest = {
+  jobDescription: string;
+  experiences: Profile[];
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
   if (req.method === "POST") {
-    const { message } = req.body;
+    const { jobDescription, experiences } = req.body as MyRequest;
+    const question = `Mitä mieltä olet minun profiilistani ja sen kuvauksesta?
+    Pitääkö lisätä jotain?
+
+    Anna neuvo lyhyesti.
+    
+    Tarkoituksena on saada hyvä ja tiivis profiili teksti,
+    joka saa työnantajan vaikutuksen vastaavasti työilmoitusta varten.
+
+    Älä ehdota mitään linkkejä. `;
+    const message = `${question} Tässä on minun profiili ${JSON.stringify(
+      experiences
+    )}, tässä on työilmoitus ${jobDescription}`;
+
     // Process a POST request
     const chatCompletion = await openai.chat.completions.create({
       messages: [{ role: "user", content: message }],
