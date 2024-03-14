@@ -18,7 +18,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <div className="flex justify-center">
+            <div className="container"> {children}</div>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );
